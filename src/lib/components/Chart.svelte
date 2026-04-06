@@ -1,8 +1,8 @@
 <script>
-  import { createChart, ColorType } from 'lightweight-charts';
-  import { normalizedSeries } from '../stores/chartData.svelte.js';
+  import { createChart, ColorType, LineSeries } from 'lightweight-charts';
+  import { chartData } from '../stores/chartData.svelte.js';
 
-  let container;
+  let container = $state();
   let chart;
   let seriesMap = {}; // symbol -> ILineSeries (NOT $state — plain JS object)
   let tooltip = $state(null);
@@ -57,7 +57,7 @@
   $effect(() => {
     if (!chart) return;
 
-    const current = normalizedSeries;
+    const current = chartData.normalizedSeries;
     const incoming = new Set(current.map(s => s.symbol));
 
     // Remove series no longer present
@@ -72,7 +72,7 @@
     for (const { symbol, color, points } of current) {
       if (!points.length) continue;
       if (!seriesMap[symbol]) {
-        seriesMap[symbol] = chart.addLineSeries({
+        seriesMap[symbol] = chart.addSeries(LineSeries, {
           color,
           lineWidth: 2,
           priceFormat: { type: 'percent', precision: 2, minMove: 0.01 },

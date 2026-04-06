@@ -1,12 +1,12 @@
 <script>
   import { PERIODS } from '../services/yahooFinance.js';
-  import { activePeriod, setActivePeriod } from '../stores/tickers.svelte.js';
+  import { store, setActivePeriod } from '../stores/tickers.svelte.js';
 </script>
 
 <div class="period-selector" role="group" aria-label="Time period">
   {#each PERIODS as period}
     <button
-      class:active={activePeriod === period}
+      class:active={store.activePeriod === period}
       onclick={() => setActivePeriod(period)}
     >
       {period}

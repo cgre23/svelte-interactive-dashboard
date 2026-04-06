@@ -1,6 +1,6 @@
 <script>
-  import { latestStats } from '../stores/chartData.svelte.js';
-  import { activePeriod } from '../stores/tickers.svelte.js';
+  import { chartData } from '../stores/chartData.svelte.js';
+  import { store } from '../stores/tickers.svelte.js';
 
   function fmt(n, digits = 2) {
     if (n == null || isNaN(n)) return '—';
@@ -18,7 +18,7 @@
   }
 </script>
 
-{#if latestStats.length > 0}
+{#if chartData.latestStats.length > 0}
   <div class="table-wrapper">
     <table>
       <thead>
@@ -27,11 +27,11 @@
           <th>Price</th>
           <th>Day Chg</th>
           <th>Day %</th>
-          <th>{activePeriod} Return</th>
+          <th>{store.activePeriod} Return</th>
         </tr>
       </thead>
       <tbody>
-        {#each latestStats as row}
+        {#each chartData.latestStats as row}
           <tr>
             <td>
               <span class="sym-dot" style="background: {row.color}"></span>

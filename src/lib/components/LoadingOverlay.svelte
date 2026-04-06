@@ -1,8 +1,8 @@
 <script>
-  import { isLoading } from '../stores/tickers.svelte.js';
+  import { store } from '../stores/tickers.svelte.js';
 </script>
 
-{#if isLoading}
+{#if store.isLoading}
   <div class="loading-bar" aria-label="Loading…">
     <div class="fill"></div>
   </div>

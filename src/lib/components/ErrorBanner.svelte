@@ -1,11 +1,11 @@
 <script>
-  import { globalError, setError } from '../stores/tickers.svelte.js';
+  import { store, setError } from '../stores/tickers.svelte.js';
 
   let visible = $state(false);
   let timer;
 
   $effect(() => {
-    if (globalError) {
+    if (store.globalError) {
       visible = true;
       clearTimeout(timer);
       timer = setTimeout(() => {
@@ -16,9 +16,9 @@
   });
 </script>
 
-{#if visible && globalError}
+{#if visible && store.globalError}
   <div class="error-banner" role="alert">
-    <span>{globalError}</span>
+    <span>{store.globalError}</span>
     <button onclick={() => { visible = false; setError(null); }}>✕</button>
   </div>
 {/if}

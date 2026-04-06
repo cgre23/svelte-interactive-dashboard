@@ -1,5 +1,5 @@
 <script>
-  import { tickers } from './lib/stores/tickers.svelte.js';
+  import { store } from './lib/stores/tickers.svelte.js';
   // Import to activate the $effect.root that drives data fetching
   import './lib/stores/chartData.svelte.js';
 
@@ -23,10 +23,10 @@
 
   <div class="controls">
     <div class="chips">
-      {#each tickers as ticker (ticker.symbol)}
+      {#each store.tickers as ticker (ticker.symbol)}
         <TickerChip symbol={ticker.symbol} color={ticker.color} />
       {/each}
-      {#if tickers.length === 0}
+      {#if store.tickers.length === 0}
         <span class="hint">Add a ticker above to get started</span>
       {/if}
     </div>
