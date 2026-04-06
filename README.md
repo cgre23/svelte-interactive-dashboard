@@ -1,43 +1,135 @@
-# Svelte + Vite
+# Svelte Interactive Stock Dashboard
 
-This template should help get you started developing with Svelte in Vite.
+A real-time stock and ETF comparison dashboard built with **Svelte 5** and **Vite**. Add multiple tickers, plot their normalized % returns on a shared chart, and compare performance across 8 time periods — all powered by live Yahoo Finance data with no API key required.
 
-## Recommended IDE Setup
+---
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Features
 
-## Need an official Svelte framework?
+- **Multi-ticker comparison** — add any stock or ETF and plot them together on a normalized % return chart
+- **8 time periods** — 1D, 5D, MTD, 1M, 1Y, 3Y, 5Y, Max
+- **Performance table** — live price, day change, and period return for each ticker
+- **Dark theme** — clean dark UI with color-coded positive/negative values
+- **Crosshair tooltip** — hover the chart to see all ticker values at the same timestamp
+- **Responsive** — chart resizes cleanly with the browser window
+- **No API key** — data fetched via `yahoo-finance2` through a local Vite proxy
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+---
 
-## Technical considerations
+## Tech Stack
 
-**Why use this over SvelteKit?**
+| Concern | Library |
+|---|---|
+| Framework | [Svelte 5](https://svelte.dev) + [Vite](https://vite.dev) |
+| Charts | [lightweight-charts v5](https://tradingview.github.io/lightweight-charts/) (TradingView) |
+| Data | [yahoo-finance2](https://github.com/gadicc/yahoo-finance2) |
+| State | Svelte 5 runes (`$state`, `$derived`, `$effect`) |
+| Styling | CSS custom properties, dark theme |
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+---
 
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## Prerequisites
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+- [Node.js](https://nodejs.org) v18 or higher
+- npm v9 or higher
 
-**Why include `.vscode/extensions.json`?**
+---
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+## Installation
 
-**Why enable `checkJs` in the JS template?**
+**1. Clone the repo**
 
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+git clone https://github.com/christiangrech/svelte-interactive-dashboard.git
+cd svelte-interactive-dashboard
 ```
+
+**2. Install dependencies**
+
+```bash
+npm install
+```
+
+**3. Start the dev server**
+
+```bash
+npm run dev
+```
+
+**4. Open in your browser**
+
+```
+http://localhost:5173
+```
+
+---
+
+## Usage
+
+1. Type a ticker symbol in the search box (e.g. `AAPL`, `MSFT`, `SPY`) and click **+ Add**
+2. Add as many tickers as you want — each gets a distinct color
+3. Use the period buttons to switch between **1D / 5D / MTD / 1M / 1Y / 3Y / 5Y / Max**
+4. Hover over the chart to see a crosshair tooltip with all values at that date
+5. Click **×** on any chip to remove a ticker
+
+> **European ETFs:** Yahoo Finance uses exchange suffixes — use `VWCE.DE` (Xetra), `VWCE.L` (London), `EUNL.DE`, etc.
+
+---
+
+## Project Structure
+
+```
+src/
+├── App.svelte                     # Layout shell
+├── app.css                        # Global dark theme CSS variables
+└── lib/
+    ├── services/
+    │   └── yahooFinance.js        # Data fetching + period date helpers
+    ├── stores/
+    │   ├── tickers.svelte.js      # Tickers list, active period, loading/error state
+    │   └── chartData.svelte.js    # Raw data, normalized series, stats (class-based runes)
+    └── components/
+        ├── Chart.svelte           # lightweight-charts canvas + crosshair tooltip
+        ├── TickerSearch.svelte    # Symbol input + validation
+        ├── TickerChip.svelte      # Colored pill with remove button
+        ├── PeriodSelector.svelte  # Period button row
+        ├── PerformanceTable.svelte# Price, day change, period return table
+        ├── LoadingOverlay.svelte  # Animated loading bar
+        └── ErrorBanner.svelte     # Auto-dismissing error message
+```
+
+---
+
+## Background
+
+Yahoo Finance's API requires session authentication that can't be called from the browser directly. The app solves this with a **Vite dev-server plugin** that intercepts requests to `/api/chart` and proxies them through `yahoo-finance2` on the Node.js side — no CORS issues, no API key needed.
+
+Data is normalized to **% return from the start of the selected period**, so tickers with very different price levels (e.g. AAPL at $200 vs SPY at $500) can be compared on the same scale.
+
+---
+
+## Available Scripts
+
+| Script | Description |
+|---|---|
+| `npm run dev` | Start dev server at `http://localhost:5173` |
+| `npm run build` | Build for production (outputs to `dist/`) |
+| `npm run preview` | Preview the production build locally |
+
+---
+
+## Production Deployment
+
+The Vite dev-server plugin that proxies Yahoo Finance **only works in development**. For a production deployment, move the data fetching to a proper server route:
+
+- **SvelteKit** — convert the project and add a `src/routes/api/chart/+server.js` route
+- **Express / Hono** — create a `/api/chart` endpoint using `yahoo-finance2`
+- **Serverless** — deploy as a Vercel or Netlify function
+
+The Svelte stores and all components work as-is in any of these setups.
+
+---
+
+## License
+
+MIT
